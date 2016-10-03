@@ -8,10 +8,7 @@ package watermarking;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
@@ -24,16 +21,25 @@ public class WatermarkFile {
     protected String filename = "watermark_new.png";
     protected BufferedImage watermark = null;
     
-    public WatermarkFile(String filename) {
+    public WatermarkFile(String watermarkFile, String imageFile) {
         try {
-            BufferedImage original = ImageIO.read(new File(filename));
+            BufferedImage original = ImageIO.read(new File(watermarkFile));
+            BufferedImage image = ImageIO.read(new File(imageFile));
             
             // Convert to binary image
             ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-            watermark = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-            op.filter(original, watermark);
+            BufferedImage binaryImage = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            op.filter(original, binaryImage);
             
             // Resize
+            BufferedImage croppedImage = binaryImage.getSubimage(0, 0, original.getWidth(), original.getHeight());
+            watermark = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            for (int i=0; i<watermark.getWidth(); i++) {
+                for (int j=0; j<watermark.getHeight(); j++) {
+                    int rgb = croppedImage.getRGB(i % croppedImage.getWidth(), j % croppedImage.getHeight());
+                    watermark.setRGB(i, j, rgb);
+                }
+            }
             
             // Write watermark image file
             ImageIO.write(watermark, "png",new File("watermark_new.png") );
@@ -47,9 +53,9 @@ public class WatermarkFile {
     }
     
     public int[] getBits() {
-        
-        int[] bits = new int[watermark.getWidth() * watermark.getHeight()];
-        Byte b = 0x0;
+        int temp = 8 - ((watermark.getWidth() * watermark.getHeight()) % 8);
+        int size = watermark.getWidth() * watermark.getHeight() + temp;
+        int[] bits = new int[size];
         int k = 0;
         for (int i=0; i<watermark.getWidth(); i++) {
             for (int j=0; j<watermark.getHeight(); j++) {
@@ -58,22 +64,15 @@ public class WatermarkFile {
                 k++;
             }
         }
+        int lastInserted = k-1;
         
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        try {
-//            FileInputStream fis = new FileInputStream(filename);
-//            
-//            byte[] buf = new byte[1024];
-//            for (int readNum; (readNum = fis.read(buf)) != -1;) {
-//                bos.write(buf, 0, readNum);
-//                System.out.println("read " + readNum + " bytes,");
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        byte[] bytes = bos.toByteArray();
+        // Insert bit 0 if (bit % 8 != 0)
+        for (int i=0; i<temp; i++) {
+            size--;
+            bits[size] = bits[lastInserted];
+            bits[lastInserted] = 0;
+            lastInserted--;
+        }
         
         return bits;
     }

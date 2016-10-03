@@ -13,12 +13,14 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
-        // Preprocess watermark file
+        // Get input
         Scanner input = new Scanner(System.in);
         System.out.print("Enter filename for watermark (BMP/PNG): ");
-        String filename = input.nextLine();
-        WatermarkFile watermark = new WatermarkFile("waee.png");
+        String watermarkFile = input.nextLine();
+        System.out.print("Enter filename for image (BMP/PNG): ");
+        String imageFile = input.nextLine();
         
-        watermark.getBits();
+        // Preprocess watermark file
+        WatermarkFile watermark = new WatermarkFile(watermarkFile, imageFile);
     }
 }

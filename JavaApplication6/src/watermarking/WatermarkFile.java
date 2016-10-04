@@ -82,11 +82,10 @@ public class WatermarkFile {
         BufferedImage watermarkImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
         int dummySize = bits.length - (image.getWidth() * image.getHeight());
         int k = 0;
-        int firstDummyIdx = (image.getWidth() * image.getHeight()) - 8 + dummySize;
         for (int i=0; i<watermarkImage.getWidth(); i++) {
             for (int j=0; j<watermarkImage.getHeight(); j++) {
                 watermarkImage.setRGB(j, j, bits[k]);
-                if (k == firstDummyIdx)
+                if (k == bits.length - 8)
                     k += dummySize;
                 else
                     k++;

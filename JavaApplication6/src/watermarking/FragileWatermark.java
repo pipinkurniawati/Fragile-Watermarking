@@ -15,26 +15,28 @@ import java.util.Random;
  */
 public class FragileWatermark {
     
-    private int[] watermarkBits;
-    private int[] originalBits;
-    private int[] steganoBits;
+    private String watermarkBits;
+    private String originalBits;
+    private String steganoBits;
     private Integer[] locations;
     private String key;
     
-    public FragileWatermark(int[] watermark, int [] original, String key) {
+    public FragileWatermark(String watermark, String original, String key) {
         this.watermarkBits = watermark;
         this.originalBits = original;
-        this.steganoBits = original;
+        //this.steganoBits = original;
         this.key = key;
         
-        locations = new Integer[watermarkBits.length];
-        generatePseudoRandom();
+        locations = new Integer[watermarkBits.length()];
+        //generatePseudoRandom();
+
+        
     }
     
     public void putWatermark(){
-        String str = binaryToString(watermarkBits);     
+        String str = bitsToAscii(watermarkBits);     
         ExtendedVigenere vigenere = new ExtendedVigenere(str, key);
-        changeLSB(stringToBinary(vigenere.encrypt()));
+        changeLSB(asciiToBits(vigenere.encrypt()));
     }
     
     public void generatePseudoRandom(){
@@ -46,27 +48,21 @@ public class FragileWatermark {
         
         //Generate sequence of random position
         Random pseudoRandom = new Random(seed);
-        for(int i=0; i<watermarkBits.length; i++){
-           int random = pseudoRandom.nextInt(watermarkBits.length);
+        for(int i=0; i<watermarkBits.length(); i++){
+
+           int random = pseudoRandom.nextInt(watermarkBits.length());
            while (Arrays.asList(locations).contains(random)) {
-               random = pseudoRandom.nextInt(watermarkBits.length);
+               random = pseudoRandom.nextInt(watermarkBits.length());
            }
            locations[i] = random;
         }          
     } 
       
-    public String binaryToString(int[] bits) {
-        
-        //Convert bits in array of int to string
-        String stringBits = "";
-        for(int i=0; i< bits.length; i++) {
-            stringBits += String.valueOf(bits[i]);
-        }
-        
+    public String bitsToAscii(String bits) {
         //Generate ascii string based on binary sequence
-        StringBuilder str = new StringBuilder(stringBits.length()/8);      
-        for(int i=0; i<stringBits.length(); i++){
-            int charCode = Integer.parseInt(stringBits.substring(i,i+8),2);
+        StringBuilder str = new StringBuilder(bits.length()/8);      
+        for(int i=0; i<bits.length(); i++){
+            int charCode = Integer.parseInt(bits.substring(i,i+8),2);
             str.append((char)charCode);
             i+=7;
         }
@@ -74,7 +70,7 @@ public class FragileWatermark {
         return str.toString();
     }
     
-    public int[] stringToBinary(String str) {
+    public String asciiToBits(String str) {
         
         //Generate bytes of char in string 
         int[] bytes = new int[str.length()];       
@@ -89,24 +85,24 @@ public class FragileWatermark {
             String format = String.format("%8s", bin).replace(' ', '0');
             builder.append(format);
         }
-        
-        //Move string to array of integer
-        int[] binary = new int[str.length() * 8];
-        for(int i=0; i < builder.length(); i++) {
-            binary[i] = Integer.parseInt(builder.substring(i,i+1));
-        }
-        
-        return binary;
+       
+        return builder.toString();
     }
     
-    public void changeLSB(int[] watermark){      
-        for(int i=0; i < watermark.length; i++) {
-            int index = locations[i] + 23;
-            steganoBits[index] = watermark[i];
+    public void changeLSB(String watermark){   
+        StringBuilder builder = new StringBuilder(originalBits); 
+
+        for(int i=0; i < watermark.length()-16; i++) {
+            int index = i * 32 + 31;
+            builder.replace(index, index+1, watermark.substring(i, i+1));
         }
+        this.steganoBits = builder.toString();
+        
     }
     
-    public int[] getStegano(){
+    public String getStegano(){
         return steganoBits;
     }
+    
+    
 }

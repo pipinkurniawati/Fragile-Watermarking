@@ -42,7 +42,7 @@ public class ExtendedVigenere {
     /**
      * 
      * @return string
-     * dectypt text based on input key
+     * decrypt text based on input key
      */
     public String decrypt() {
         String result = new String();

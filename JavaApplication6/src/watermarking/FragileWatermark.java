@@ -5,6 +5,7 @@
  */
 package watermarking;
 
+import java.util.ArrayList;
 import vigenere.ExtendedVigenere;
 import java.util.Arrays;
 import java.util.Random;
@@ -28,9 +29,7 @@ public class FragileWatermark {
         this.key = key;
         
         locations = new Integer[watermarkBits.length()];
-        //generatePseudoRandom();
-
-        
+        generatePseudoRandom();
     }
     
     public void putWatermark(){
@@ -48,13 +47,19 @@ public class FragileWatermark {
         
         //Generate sequence of random position
         Random pseudoRandom = new Random(seed);
+        ArrayList<Integer> list = new ArrayList<Integer>();
         for(int i=0; i<watermarkBits.length(); i++){
-
+            list.add(i);
+        }
+        for(int i=0; i<watermarkBits.length(); i++){
            int random = pseudoRandom.nextInt(watermarkBits.length());
-           while (Arrays.asList(locations).contains(random)) {
-               random = pseudoRandom.nextInt(watermarkBits.length());
-           }
-           locations[i] = random;
+//           while (Arrays.asList(locations).contains(random)) {
+//               random = pseudoRandom.nextInt(watermarkBits.length());
+//           }
+//           locations[i] = random;
+           int idx = random % list.size();
+           locations[i] = list.get(idx);
+           list.remove(idx);
         }          
     } 
       
@@ -92,7 +97,7 @@ public class FragileWatermark {
     public void changeLSB(String watermark){   
         StringBuilder builder = new StringBuilder(originalBits); 
 
-        for(int i=0; i < watermark.length()-16; i++) {
+        for(int i=0; i < watermark.length(); i++) {
             int index = i * 32 + 31;
             builder.replace(index, index+1, watermark.substring(i, i+1));
         }

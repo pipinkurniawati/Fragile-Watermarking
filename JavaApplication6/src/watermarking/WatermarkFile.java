@@ -53,7 +53,7 @@ public class WatermarkFile {
     }
     
     public String getBits() {
-        int temp = 8 - ((watermark.getWidth() * watermark.getHeight()) % 8);
+        int temp = (8 - ((watermark.getWidth() * watermark.getHeight()) % 8)) % 8;
         int size = watermark.getWidth() * watermark.getHeight() + temp;
         //int[] bits = new int[size];
         StringBuilder builder = new StringBuilder(size);

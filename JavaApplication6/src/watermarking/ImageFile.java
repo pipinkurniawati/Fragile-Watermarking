@@ -61,7 +61,7 @@ public class ImageFile {
             k++;
         }
         
-        BufferedImage watermarkImage = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+        BufferedImage watermarkImage = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
         k = 0;
         
         for (int i=0; i<watermarkImage.getWidth(); i++) {

@@ -76,30 +76,19 @@ public class ImageFile {
     }
     
     public void saveWatermarkImage(String bits) throws IOException{
-
-        //Generate ascii string based on binary sequence       
-        int[] bytes = new int[bits.length()/8];
-        
-        String temp;
-        
-        int k=0;
-        for(int i=0; i<bits.length()-8; i+=8){
-            long parseLong = Long.parseLong(bits.substring(i,i+8),2);
-            int charCode = (int)parseLong;
-            bytes[k] = charCode;
-            k++;
-        }
-        
-        BufferedImage watermarkImage = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        k = 0;
-        
+        char[] imageBits = bits.toCharArray();
+        BufferedImage watermarkImage = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+        int dummySize = bits.length() - (original.getWidth() * original.getHeight());
+        int k = 0;
         for (int i=0; i<watermarkImage.getWidth(); i++) {
             for (int j=0; j<watermarkImage.getHeight(); j++) {
-                watermarkImage.setRGB(i, j, bytes[k]);
-                k++;
+                watermarkImage.setRGB(i, j, imageBits[k]);
+                if (k == bits.length() - 8)
+                    k += dummySize;
+                else
+                    k++;
             }
         }   
-        
         // Write watermark image file
         ImageIO.write(watermarkImage, "png",new File("extracted_watermark.png") );
     }

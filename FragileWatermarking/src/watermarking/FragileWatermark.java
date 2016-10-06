@@ -131,11 +131,9 @@ public class FragileWatermark {
     
     public void extractSteganoLSB(String watermarkedImage) {
         List<Character> watermarkBits = new ArrayList<Character>();
-        int index = 0;
         for(int i=0; i<watermarkedImage.length(); i++) {
             if (i % 32 == 31) {
                 watermarkBits.add(watermarkedImage.charAt(i));
-                index++;
             }
         }
         char[] temp = new char[watermarkBits.size()];

@@ -10,6 +10,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -27,8 +31,10 @@ public class Main {
         if (choice.equals("1")) {
             System.out.print("Enter filename for watermark (BMP/PNG): ");
             String watermarkFile = input.nextLine();
+            loadImage(watermarkFile);
             System.out.print("Enter filename for image (BMP/PNG): ");
             String imageFile = input.nextLine();
+            loadImage(imageFile);
             System.out.print("Masukkan kunci: ");
             String key = input.nextLine();
 
@@ -79,6 +85,16 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }  
-        
+    }
+    
+    public static void loadImage(String filename) {
+        ImageIcon icon = new ImageIcon(filename);
+        JLabel label = new JLabel(icon);
+        JFrame f = new JFrame();
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.getContentPane().add(new JScrollPane(label));
+        f.setSize(400,400);
+        f.setLocation(200,200);
+        f.setVisible(true);
     }
 }

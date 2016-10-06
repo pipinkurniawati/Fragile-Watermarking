@@ -95,13 +95,15 @@ public class FragileWatermark {
     }
     
     public void changeLSB(String watermark){   
-        StringBuilder builder = new StringBuilder(originalBits); 
-
+        
+        char[] stegano = originalBits.toCharArray();
+        
         for(int i=0; i < watermark.length(); i++) {
             int index = i * 32 + 31;
-            builder.replace(index, index+1, watermark.substring(i, i+1));
+            stegano[index] = watermark.charAt(i);
         }
-        this.steganoBits = builder.toString();
+        
+        this.steganoBits = String.valueOf(stegano);
         
     }
     

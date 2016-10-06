@@ -8,6 +8,7 @@ package watermarking;
 import java.util.ArrayList;
 import vigenere.ExtendedVigenere;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,14 +23,18 @@ public class FragileWatermark {
     private Integer[] locations;
     private String key;
     
+    public FragileWatermark(String watermarkedImage, String key) {
+        this.originalBits = watermarkedImage;
+        this.key = key;
+    }
+    
     public FragileWatermark(String watermark, String original, String key) {
         this.watermarkBits = watermark;
         this.originalBits = original;
-        //this.steganoBits = original;
         this.key = key;
         
         locations = new Integer[watermarkBits.length()];
-        generatePseudoRandom();
+        generatePseudoRandom(watermarkBits);
     }
     
     public void putWatermark(){
@@ -38,7 +43,28 @@ public class FragileWatermark {
         changeLSB(asciiToBits(vigenere.encrypt()));
     }
     
-    public void generatePseudoRandom(){
+    public void extractWatermark() {  
+        String extractedBits = new String();  
+        extractSteganoLSB(originalBits);
+        
+        locations = new Integer[steganoBits.length()];
+        generatePseudoRandom(steganoBits);
+        
+        int index = 0;
+        while(index<steganoBits.length()) {
+            for (int i=0; i<steganoBits.length(); i++) {
+                if (locations[i] == index) {
+                    extractedBits += steganoBits.charAt(i);
+                }
+            }
+            index++;
+        }
+        ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(extractedBits), key);
+        this.watermarkBits = asciiToBits(vigenere.decrypt());
+        System.out.println(watermarkBits);
+    }
+    
+    public void generatePseudoRandom(String bits){
         //Create seed
         int seed = 0;
         for(int i=0; i < key.length(); i++) {
@@ -48,15 +74,11 @@ public class FragileWatermark {
         //Generate sequence of random position
         Random pseudoRandom = new Random(seed);
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for(int i=0; i<watermarkBits.length(); i++){
+        for(int i=0; i<bits.length(); i++){
             list.add(i);
         }
-        for(int i=0; i<watermarkBits.length(); i++){
-           int random = pseudoRandom.nextInt(watermarkBits.length());
-//           while (Arrays.asList(locations).contains(random)) {
-//               random = pseudoRandom.nextInt(watermarkBits.length());
-//           }
-//           locations[i] = random;
+        for(int i=0; i<bits.length(); i++){
+           int random = pseudoRandom.nextInt(bits.length());
            int idx = random % list.size();
            locations[i] = list.get(idx);
            list.remove(idx);
@@ -107,9 +129,25 @@ public class FragileWatermark {
         
     }
     
+    public void extractSteganoLSB(String watermarkedImage) {
+        List<Character> watermarkBits = new ArrayList<Character>();
+        int index = 0;
+        for(int i=0; i<watermarkedImage.length(); i++) {
+            if (i % 32 == 31) {
+                watermarkBits.add(watermarkedImage.charAt(i));
+                index++;
+            }
+        }
+        char[] temp = new char[watermarkBits.size()];
+        for(int i=0; i<watermarkBits.size(); i++) temp[i] = watermarkBits.get(i);
+        this.steganoBits = String.valueOf(temp);
+    }
+    
     public String getStegano(){
         return steganoBits;
     }
     
-    
+    public String getWatermark() {
+        return watermarkBits;
+    }
 }

@@ -47,7 +47,7 @@ public class FragileWatermark {
         String extractedBits = new String();  
         extractSteganoLSB(originalBits);
         
-        locations = new Integer[steganoBits.length()];
+        /*locations = new Integer[steganoBits.length()];
         generatePseudoRandom(steganoBits);
         
         int index = 0;
@@ -58,8 +58,8 @@ public class FragileWatermark {
                 }
             }
             index++;
-        }
-        ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(extractedBits), key);
+        }*/
+        ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(steganoBits), key);
         this.watermarkBits = asciiToBits(vigenere.decrypt());
         System.out.println(watermarkBits);
     }

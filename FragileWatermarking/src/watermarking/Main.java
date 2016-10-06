@@ -64,6 +64,7 @@ public class Main {
         } else if (choice.equals("2")) {
             System.out.print("Enter filename of a watermarked image (BMP/PNG): ");
             String imageFile = input.nextLine();
+            loadImage(imageFile);
             System.out.print("Type the key: ");
             String key = input.nextLine();
             
@@ -93,7 +94,7 @@ public class Main {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.getContentPane().add(new JScrollPane(label));
-        f.setSize(400,400);
+        f.setSize(800,800);
         f.setLocation(200,200);
         f.setVisible(true);
     }

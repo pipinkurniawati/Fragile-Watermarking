@@ -82,7 +82,10 @@ public class ImageFile {
         int k = 0;
         for (int i=0; i<watermarkImage.getWidth(); i++) {
             for (int j=0; j<watermarkImage.getHeight(); j++) {
-                watermarkImage.setRGB(i, j, imageBits[k]);
+                if (imageBits[k] == '1') //putih
+                    watermarkImage.setRGB(i, j, -1);
+                else //hitam
+                    watermarkImage.setRGB(i, j, -16777216);
                 if (k == bits.length() - 8)
                     k += dummySize;
                 else

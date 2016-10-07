@@ -45,15 +45,11 @@ public class Main {
             String watermarkBits = watermark.getBits();
             String imageBits = image.getBits();
 
-            System.out.println("Bits Image " + imageBits.length());
-            System.out.println("Bits Watermark " + watermarkBits.length());
-
             System.out.println("Construct FragileWatermark");
             FragileWatermark fragile = new FragileWatermark(watermarkBits, imageBits, key);
             System.out.println("Put Watermark");
             fragile.putWatermark();
-
-            System.out.println("Bits Stegano: " + fragile.getStegano().length());            
+           
             System.out.println("Save File");
 
             try {
@@ -61,6 +57,7 @@ public class Main {
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
+            System.out.println("Done");
         } else if (choice.equals("2")) {
             System.out.print("Enter filename of a watermarked image (BMP/PNG): ");
             String imageFile = input.nextLine();
@@ -70,14 +67,11 @@ public class Main {
             
             ImageFile watermarkedImage = new ImageFile(imageFile);
             String imageBits = watermarkedImage.getBits();
-            
-            System.out.println("Bits Watermarked Image " + imageBits.length());
 
             System.out.println("Extracting a Watermark Image...");
             FragileWatermark fragile = new FragileWatermark(imageBits, key);
             fragile.extractWatermark();
-
-            System.out.println("Bits watermark image: " + fragile.getWatermark().length());            
+           
             System.out.println("Save File");
 
             try {
@@ -85,6 +79,8 @@ public class Main {
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            System.out.println("Done");
         }  
     }
     

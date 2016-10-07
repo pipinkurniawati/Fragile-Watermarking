@@ -20,6 +20,7 @@ public class WatermarkFile {
     
     protected String filename = "watermark_new.png";
     protected BufferedImage watermark = null;
+    protected String watermarkBits;
     
     public WatermarkFile(String watermarkFile, String imageFile) {
         try {
@@ -34,12 +35,20 @@ public class WatermarkFile {
             // Resize
             BufferedImage croppedImage = binaryImage.getSubimage(0, 0, original.getWidth(), original.getHeight());
             watermark = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            StringBuilder builder = new StringBuilder(watermark.getWidth() * watermark.getHeight());
+            int k=0;
             for (int i=0; i<watermark.getWidth(); i++) {
                 for (int j=0; j<watermark.getHeight(); j++) {
                     int rgb = croppedImage.getRGB(i % croppedImage.getWidth(), j % croppedImage.getHeight());
+                    if(rgb == -1)
+                        builder.insert(k,1);
+                    else
+                        builder.insert(k,0);
+                    k++;
                     watermark.setRGB(i, j, rgb);
                 }
             }
+            watermarkBits=builder.toString();
             
             // Write watermark image file
             ImageIO.write(watermark, "png",new File("watermark_new.png") );
@@ -53,32 +62,36 @@ public class WatermarkFile {
     }
     
     public String getBits() {
-        int temp = (8 - ((watermark.getWidth() * watermark.getHeight()) % 8)) % 8;
-        int size = watermark.getWidth() * watermark.getHeight() + temp;
-        //int[] bits = new int[size];
-        StringBuilder builder = new StringBuilder(size);
-        int k = 0;
-        for (int i=0; i<watermark.getWidth(); i++) {
-            for (int j=0; j<watermark.getHeight(); j++) {
-                int lastBit = watermark.getRGB(j, j) & 1;
-                //bits[k] = lastBit;
-                builder.append(lastBit);
-                k++;
-            }
-        }
-        int lastInserted = k-1;
-        
-        // Insert bit 0 if (bit % 8 != 0)
-        for (int i=0; i<temp; i++) {
-            size--;
-            builder.append(builder.charAt(lastInserted));
-            builder.insert(lastInserted, 0);
-            //bits[size] = bits[lastInserted];
-            //bits[lastInserted] = 0;
-            lastInserted--;
-        }
-        
-        return builder.toString();
+        return watermarkBits;
+//        int temp = (8 - ((watermark.getWidth() * watermark.getHeight()) % 8)) % 8;
+//        int size = watermark.getWidth() * watermark.getHeight(); //+ temp;
+//        //int[] bits = new int[size];
+//        StringBuilder builder = new StringBuilder(size);
+//        int k = 0;
+//        for (int i=0; i<watermark.getWidth(); i++) {
+//            for (int j=0; j<watermark.getHeight(); j++) {
+//                int lastBit = watermark.getRGB(j, j); //& 1;
+//                //bits[k] = lastBit;
+//                if(lastBit == -1)
+//                    builder.insert(k,1);
+//                else
+//                    builder.insert(k,0);
+//                k++;
+//            }
+//        }
+//        int lastInserted = k-1;
+//        
+//        // Insert bit 0 if (bit % 8 != 0)
+//        for (int i=0; i<temp; i++) {
+//            size--;
+//            builder.append(builder.charAt(lastInserted));
+//            builder.insert(lastInserted, 0);
+//            //bits[size] = bits[lastInserted];
+//            //bits[lastInserted] = 0;
+//            lastInserted--;
+//        }
+//        
+//        return builder.toString();
     }
 
     /* Get watermark image, given its array of integer (bits) and image */

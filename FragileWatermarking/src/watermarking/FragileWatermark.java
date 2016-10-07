@@ -61,7 +61,6 @@ public class FragileWatermark {
         }*/
         ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(steganoBits), key);
         this.watermarkBits = asciiToBits(vigenere.decrypt());
-        System.out.println(watermarkBits);
     }
     
     public void generatePseudoRandom(String bits){

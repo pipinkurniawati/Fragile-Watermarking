@@ -43,23 +43,18 @@ public class FragileWatermark {
         changeLSB(asciiToBits(vigenere.encrypt()));
     }
     
-    public void extractWatermark() {  
-        String extractedBits = new String();  
+    public void extractWatermark() {        
         extractSteganoLSB(originalBits);
         
-        /*locations = new Integer[steganoBits.length()];
+        char[] extractedBits = new char[steganoBits.length()];  
+        locations = new Integer[steganoBits.length()];
         generatePseudoRandom(steganoBits);
         
-        int index = 0;
-        while(index<steganoBits.length()) {
-            for (int i=0; i<steganoBits.length(); i++) {
-                if (locations[i] == index) {
-                    extractedBits += steganoBits.charAt(i);
-                }
-            }
-            index++;
-        }*/
-        ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(steganoBits), key);
+        for(int i=0; i<steganoBits.length(); i++) {
+            extractedBits[locations[i]] = steganoBits.charAt(i);
+        }
+        
+        ExtendedVigenere vigenere = new ExtendedVigenere(bitsToAscii(String.valueOf(extractedBits)), key);
         this.watermarkBits = asciiToBits(vigenere.decrypt());
     }
     
@@ -121,7 +116,7 @@ public class FragileWatermark {
         
         for(int i=0; i < watermark.length(); i++) {
             int index = i * 32 + 31;
-            stegano[index] = watermark.charAt(i);
+            stegano[index] = watermark.charAt(locations[i]);
         }
         
         this.steganoBits = String.valueOf(stegano);

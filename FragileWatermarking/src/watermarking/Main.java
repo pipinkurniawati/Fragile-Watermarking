@@ -5,11 +5,15 @@
  */
 package watermarking;
 
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -85,13 +89,18 @@ public class Main {
     }
     
     public static void loadImage(String filename) {
-        ImageIcon icon = new ImageIcon(filename);
-        JLabel label = new JLabel(icon);
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.getContentPane().add(new JScrollPane(label));
-        f.setSize(800,800);
-        f.setLocation(200,200);
-        f.setVisible(true);
+        try {
+            Image image = ImageIO.read(new File(filename));
+            ImageIcon icon = new ImageIcon(image);
+            JLabel label = new JLabel(icon);
+            JFrame f = new JFrame();
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.getContentPane().add(new JScrollPane(label));
+            f.setSize(800,800);
+            f.setLocation(200,200);
+            f.setVisible(true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
